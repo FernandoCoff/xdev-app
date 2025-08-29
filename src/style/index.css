@@ -1,18 +1,18 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-*{
+* {
   font-family: 'poppins', sans-serif;
 }
 
-body{
+body {
   background-color: #030712;
 }
 
-a{
-  transition: .4s;
+a {
+  transition: 0.4s;
 }
 
-button{
+button {
   cursor: pointer;
-  transition: .4s;
+  transition: 0.4s;
 }
