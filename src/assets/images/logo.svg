@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="xdev logo">
+  <title>xdev</title>
+  <defs>
+    <style>
+      :root { color: oklch(62.3% 0.214 259.815); }
+    </style>
+  </defs>
+
+  <!-- quadrado arredondado com raio ~65 -->
+  <rect x="12" y="12" width="232" height="232" rx="65" fill="none" stroke="currentColor" stroke-width="24"/>
+
+  <!-- X central estilizado -->
+  <path d="M76 76 L180 180 M180 76 L76 180"
+        fill="none"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-width="38"/>
+</svg>
