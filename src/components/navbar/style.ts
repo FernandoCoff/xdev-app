@@ -3,12 +3,14 @@ import { color } from '../../style'
 
 export const Navbar = styled.nav`
   max-width: 250px;
+  width: 100%;
   height: 100dvh;
   background-color: ${color.bgPrimary};
-  box-shadow: 5px 5px 10px rgba(0,0,0,.1);
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid ${color.border};
+  z-index: 100;
 
-
-  h2{
+  h2 {
     padding-top: 24px;
     text-align: center;
     font-weight: 600;
@@ -26,28 +28,34 @@ export const Navbar = styled.nav`
       border-radius: 3px;
     }
   }
-  @media(max-width: 1024px){
+
+  @media (max-width: 1300px) {
+    box-shadow: none;
+  }
+
+  @media (max-width: 1200px) {
     max-width: 100px;
 
-    h2{
-      &::after{
-        left: 10%;
-        width: 50%;
-      }
+    h2::after {
+      left: 10%;
+      width: 50%;
     }
   }
-  @media(max-width: 767px){
+
+  @media (max-width: 800px) {
     max-width: 100%;
     height: 80px;
-    position: sticky;
+    border: none;
+    border-top: 1px solid ${color.border};
+    position: fixed;
     left: 0;
-    top: 100%;
+    bottom: 0;
 
-    h2{
+    h2 {
       display: none;
     }
   }
-  `
+`
 export const NavList = styled.ul`
   width: 100%;
   display: flex;
@@ -58,10 +66,14 @@ export const NavList = styled.ul`
   list-style: none;
   gap: 24px;
 
-  li{
+  li {
     width: 100%;
 
-    button{
+    a {
+      text-decoration: none;
+    }
+
+    button {
       width: 100%;
       display: flex;
       align-items: center;
@@ -70,24 +82,29 @@ export const NavList = styled.ul`
       background-color: transparent;
       border: none;
       font-size: 18px;
-      transition: .4s;
+      transition: 0.4s;
+      flex-wrap: nowrap;
 
-      @media(max-width: 1024px){
-        justify-content: center;
-        p{
-          display: none;
-        }
-      }
-
-      &:hover{
+      &:hover {
         color: ${color.primary};
       }
-
     }
   }
 
-  @media(max-width: 767px){
-    flex-direction: row;
+  @media (max-width: 1200px) {
+    li button {
+      justify-content: center;
+
+      p {
+        display: none;
+      }
+    }
   }
 
+  @media (max-width: 800px) {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0;
+    height: 100%;
+  }
 `

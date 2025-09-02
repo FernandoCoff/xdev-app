@@ -7,6 +7,7 @@ export const color = {
   border: '#ccc',
   red: '#f14646ff',
   green: '#4cd33aff',
+  gray: '#fafafa',
 }
 
 const GlobalStyle = createGlobalStyle`
@@ -15,6 +16,12 @@ const GlobalStyle = createGlobalStyle`
   margin: 0;
   box-sizing: border-box;
   font-family: 'poppins', sans-serif;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar{
+    display: none;
+  }
 }
 
 button{

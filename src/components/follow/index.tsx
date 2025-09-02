@@ -1,6 +1,5 @@
 import * as S from './style'
 
-const Follow = () => {
-
-  return
+export const Follow = () => {
+  return <S.Follow></S.Follow>
 }
