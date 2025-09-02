@@ -8,6 +8,7 @@ type props = {
   setContent: (e: React.ChangeEvent<HTMLInputElement>) => void
   $status: string
   error?: string
+  value?: string
 }
 
 export const InputForm = ({
@@ -18,6 +19,7 @@ export const InputForm = ({
   setContent,
   $status,
   error,
+  value,
 }: props) => {
   return (
     <S.InputForm $status={$status}>
@@ -29,6 +31,7 @@ export const InputForm = ({
         type={type}
         placeholder={label}
         required={required}
+        value={value}
       />
       <i className="fa-solid fa-circle-check"></i>
       <i className="fa-solid fa-circle-exclamation"></i>

@@ -1,22 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../hooks'
-import { registerUser } from '../../store/reducers/authSlice'
-import { AuthContainer } from '../../style'
-import { CardForm } from '../../components/cardForm'
-import { InputForm } from '../../components/inputForm'
-import { FormButton } from '../../components/formButton'
 import * as S from './style'
+import { FormButton } from '../formButton'
+import { InputForm } from '../inputForm'
 
 type StatusType = 'success' | 'error' | 'empty'
 
-function Register() {
-  const {
-    status: authStatus,
-    error: authError,
-    isAuthenticated,
-  } = useAppSelector((state) => state.auth)
-
+export const Profile = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [username, setUserName] = useState('')
@@ -35,18 +24,6 @@ function Register() {
     password: 'empty',
     password2: 'empty',
   })
-
-  const dispatch = useAppDispatch()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/')
-    }
-    if (authStatus === 'succeeded') {
-      navigate('/login')
-    }
-  }, [authStatus, navigate, isAuthenticated])
 
   useEffect(() => {
     if (username.length === 0) {
@@ -134,73 +111,61 @@ function Register() {
     return isValid
   }
 
-  function submitForm(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    if (validateForm()) {
-      dispatch(registerUser({ email, password, password2, username }))
-    }
-  }
-
   return (
-    <AuthContainer>
-      <CardForm>
-        <S.Header>
-          <h2>Cadastre-se</h2>
-          <p>
-            Possui conta? <Link to="/login">Entre agora.</Link>
-          </p>
-        </S.Header>
-        <form onSubmit={submitForm}>
-          <InputForm
-            name="username"
-            label="Nome de usuário"
-            setContent={(e) => setUserName(e.target.value)}
-            type="text"
-            $status={statuses.username}
-            error={errors.username}
-            required
+    <S.Profile>
+      <S.ProfileImage>
+        <div>
+          <img
+            src="https://placehold.co/400x400/4747fc/white?text=D"
+            alt="Foto do usuário"
           />
-          <InputForm
-            name="email"
-            label="Email"
-            setContent={(e) => setEmail(e.target.value)}
-            type="email"
-            $status={statuses.email}
-            error={errors.email}
-            required
-          />
-          <InputForm
-            name="password"
-            label="Senha"
-            setContent={(e) => setPassword(e.target.value)}
-            type="password"
-            $status={statuses.password}
-            error={errors.password}
-            required
-          />
-          <InputForm
-            name="password2"
-            label="Confirme a senha"
-            setContent={(e) => setPassword2(e.target.value)}
-            type="password"
-            $status={statuses.password2}
-            error={errors.password2}
-            required
-          />
-          <FormButton status={authStatus} text="Cadastrar" />
-        </form>
-        {authStatus === 'failed' &&
-          authError &&
-          (typeof authError === 'object' && authError !== null ? (
-            Object.values(authError).map((msg, index) => (
-              <S.error key={index}>{msg as string}</S.error>
-            ))
-          ) : (
-            <S.error>{authError as string}</S.error>
-          ))}
-      </CardForm>
-    </AuthContainer>
+          <button>Alterar foto</button>
+        </div>
+        <p>
+          Foto de perfil <br />
+          (clique para alterar)
+        </p>
+      </S.ProfileImage>
+      <form>
+        <h2>Editar Perfil</h2>
+        <InputForm
+          name="username"
+          label="Nome de usuário"
+          setContent={(e) => setUserName(e.target.value)}
+          type="text"
+          $status={statuses.username}
+          error={errors.username}
+          value={username}
+        />
+        <InputForm
+          name="email"
+          label="Email"
+          setContent={(e) => setEmail(e.target.value)}
+          type="email"
+          $status={statuses.email}
+          error={errors.email}
+          value={email}
+        />
+        <InputForm
+          name="password"
+          label="Nova Senha"
+          setContent={(e) => setPassword(e.target.value)}
+          type="password"
+          $status={statuses.password}
+          error={errors.password}
+          value={password}
+        />
+        <InputForm
+          name="password2"
+          label="Confirme a nova senha"
+          setContent={(e) => setPassword2(e.target.value)}
+          type="password"
+          $status={statuses.password2}
+          error={errors.password2}
+          value={password2}
+        />
+        <FormButton status="idle" text="editar" />
+      </form>
+    </S.Profile>
   )
 }
-
-export default Register
