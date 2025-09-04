@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
 import Home from './pages/home'
 import NotFound from './pages/notFound'
 import Login from './pages/login'
@@ -6,8 +7,19 @@ import Register from './pages/register'
 import ProtectedRoute from './pages/protected'
 import { Feed } from './components/feed'
 import { Profile } from './components/profile'
+import { useAppDispatch, useAppSelector } from './hooks'
+import { fetchMyProfile } from './store/reducers/authSlice'
 
 function App() {
+  const dispatch = useAppDispatch()
+  const token = useAppSelector((state) => state.auth.token)
+
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchMyProfile())
+    }
+  }, [dispatch, token])
+
   return (
     <>
       <Routes>

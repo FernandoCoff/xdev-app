@@ -1,6 +1,32 @@
 import styled from 'styled-components'
 import { color } from '../../style'
 
+export const FollowContainer = styled.ul`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-top: 24px;
+  @media (max-width: 767px) {
+    justify-content: center;
+    gap: 24px;
+  }
+`
+export const FollowItem = styled.li`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  span {
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+`
+
 export const Profile = styled.div`
   max-width: 1000px;
   width: 100%;
@@ -54,6 +80,9 @@ export const Profile = styled.div`
 `
 
 export const ProfileImage = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   div {
     position: relative;
     max-width: 400px;
@@ -71,13 +100,6 @@ export const ProfileImage = styled.div`
         color: ${color.bgPrimary};
       }
     }
-  }
-
-  p {
-    width: 100%;
-    text-align: center;
-    margin-top: 24px;
-    font-size: 14px;
   }
 
   button {
@@ -108,13 +130,24 @@ export const ProfileImage = styled.div`
   }
 
   @media (max-width: 767px) {
-    p {
-      display: none;
-    }
-
     div {
       max-width: 200px;
       max-height: 200px;
     }
   }
+`
+export const ok = styled.p`
+  font-size: 14px;
+  color: ${color.green};
+  width: 100%;
+  text-align: center;
+  margin-top: 16px;
+`
+
+export const err = styled.p`
+  width: 100%;
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: ${color.red};
 `

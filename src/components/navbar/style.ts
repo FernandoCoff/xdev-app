@@ -2,11 +2,10 @@ import styled from 'styled-components'
 import { color } from '../../style'
 
 export const Navbar = styled.nav`
-  max-width: 250px;
+  max-width: 100px;
   width: 100%;
   height: 100dvh;
   background-color: ${color.bgPrimary};
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
   border-right: 1px solid ${color.border};
   z-index: 100;
 
@@ -20,26 +19,17 @@ export const Navbar = styled.nav`
     &::after {
       content: '';
       height: 3px;
-      width: 20%;
+      width: 50%;
       background: ${color.gradient};
       position: absolute;
       bottom: 0;
-      left: 35%;
+      left: 10%;
       border-radius: 3px;
     }
   }
 
   @media (max-width: 1300px) {
     box-shadow: none;
-  }
-
-  @media (max-width: 1200px) {
-    max-width: 100px;
-
-    h2::after {
-      left: 10%;
-      width: 50%;
-    }
   }
 
   @media (max-width: 800px) {
@@ -64,7 +54,7 @@ export const NavList = styled.ul`
   justify-content: flex-start;
   padding: 32px;
   list-style: none;
-  gap: 24px;
+  gap: 32px;
 
   li {
     width: 100%;
@@ -77,26 +67,15 @@ export const NavList = styled.ul`
       width: 100%;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      gap: 16px;
+      justify-content: center;
       background-color: transparent;
       border: none;
-      font-size: 18px;
+      font-size: 20px;
       transition: 0.4s;
       flex-wrap: nowrap;
 
       &:hover {
         color: ${color.primary};
-      }
-    }
-  }
-
-  @media (max-width: 1200px) {
-    li button {
-      justify-content: center;
-
-      p {
-        display: none;
       }
     }
   }

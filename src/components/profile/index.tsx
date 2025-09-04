@@ -1,14 +1,32 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import * as S from './style'
 import { FormButton } from '../formButton'
 import { InputForm } from '../inputForm'
+import { useAppDispatch, useAppSelector } from '../../hooks'
+import { resetStatus } from '../../store/reducers/authSlice'
+import {
+  updateUserProfile,
+  updateUserPicture,
+} from '../../store/reducers/authSlice'
 
 type StatusType = 'success' | 'error' | 'empty'
 
+interface UpdateProfilePayload {
+  username?: string
+  email?: string
+  password?: string
+  password2?: string
+}
+
 export const Profile = () => {
+  const dispatch = useAppDispatch()
+  const { user, status: authStatus } = useAppSelector((state) => state.auth)
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [username, setUserName] = useState('')
+  const [password, setPassword] = useState('')
   const [password2, setPassword2] = useState('')
 
   const [errors, setErrors] = useState({
@@ -24,6 +42,17 @@ export const Profile = () => {
     password: 'empty',
     password2: 'empty',
   })
+
+  useEffect(() => {
+    dispatch(resetStatus())
+  })
+
+  useEffect(() => {
+    if (user) {
+      setUserName(user.user.username || '')
+      setEmail(user.user.email || '')
+    }
+  }, [user])
 
   useEffect(() => {
     if (username.length === 0) {
@@ -71,7 +100,6 @@ export const Profile = () => {
       setErrors((prev) => ({ ...prev, password2: '' }))
       return
     }
-
     if (password2 !== password) {
       setStatuses((prev) => ({ ...prev, password2: 'error' }))
       setErrors((prev) => ({
@@ -86,47 +114,86 @@ export const Profile = () => {
     }
   }, [password, password2])
 
-  const validateForm = () => {
-    const newErrors = { username: '', email: '', password: '', password2: '' }
-    let isValid = true
+  const handleImageClick = () => {
+    fileInputRef.current?.click()
+  }
 
-    if (statuses.username !== 'success') {
-      newErrors.username = 'Mínimo 6 caracteres!'
-      isValid = false
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      dispatch(updateUserPicture(file))
     }
-    if (statuses.email !== 'success') {
-      newErrors.email = 'Email inválido!'
-      isValid = false
+  }
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    const payload: UpdateProfilePayload = {}
+
+    if (
+      user &&
+      user.user.username !== username &&
+      statuses.username === 'success'
+    ) {
+      payload.username = username
     }
-    if (statuses.password !== 'success') {
-      newErrors.password = 'Mínimo 8 caracteres!'
-      isValid = false
-    }
-    if (statuses.password2 !== 'success') {
-      newErrors.password2 = 'As senhas não são idênticas!'
-      isValid = false
+    if (user && user.user.email !== email && statuses.email === 'success') {
+      payload.email = email
     }
 
-    setErrors(newErrors)
-    return isValid
+    if (
+      password &&
+      statuses.password === 'success' &&
+      statuses.password2 === 'success'
+    ) {
+      payload.password = password
+      payload.password2 = password2
+      setPassword('')
+      setPassword2('')
+    }
+
+    if (Object.keys(payload).length > 0) {
+      dispatch(updateUserProfile(payload))
+    }
   }
 
   return (
     <S.Profile>
       <S.ProfileImage>
-        <div>
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+        <div onClick={handleImageClick} style={{ cursor: 'pointer' }}>
           <img
-            src="https://placehold.co/400x400/4747fc/white?text=D"
+            src={
+              user?.profile_picture ||
+              'https://placehold.co/400x400/4747fc/white?text=x'
+            }
             alt="Foto do usuário"
           />
-          <button>Alterar foto</button>
+          <button type="button" onClick={handleImageClick}>
+            Alterar foto
+          </button>
         </div>
-        <p>
-          Foto de perfil <br />
-          (clique para alterar)
-        </p>
+        <S.FollowContainer>
+          <S.FollowItem>
+            <span>0</span>
+            <p>Publicações</p>
+          </S.FollowItem>
+          <S.FollowItem>
+            <span>0</span>
+            <p>Seguindo</p>
+          </S.FollowItem>
+          <S.FollowItem>
+            <span>0</span>
+            <p>Seguidores</p>
+          </S.FollowItem>
+        </S.FollowContainer>
       </S.ProfileImage>
-      <form>
+      <form onSubmit={handleSubmit}>
         <h2>Editar Perfil</h2>
         <InputForm
           name="username"
@@ -164,7 +231,17 @@ export const Profile = () => {
           error={errors.password2}
           value={password2}
         />
-        <FormButton status="idle" text="editar" />
+        <FormButton
+          status={authStatus === 'loading' ? 'loading' : 'idle'}
+          text="Salvar Alterações"
+        />
+        {authStatus === 'failed' && (
+          <S.err>Não foi possível concluir a solicitação!</S.err>
+        )}
+
+        {authStatus === 'succeeded' && (
+          <S.ok>Alteração salva com sucesso!</S.ok>
+        )}
       </form>
     </S.Profile>
   )

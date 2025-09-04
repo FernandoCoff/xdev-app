@@ -14,7 +14,6 @@ export const NavBar = () => {
           <Link to="/feed">
             <button>
               <i className="fa-solid fa-house"></i>
-              <p>Página inicial</p>
             </button>
           </Link>
         </li>
@@ -22,14 +21,12 @@ export const NavBar = () => {
           <Link to="/profile">
             <button>
               <i className="fa-regular fa-user"></i>
-              <p>Perfil</p>
             </button>
           </Link>
         </li>
         <li>
           <button onClick={() => dispath(logout())}>
             <i className="fa-solid fa-arrow-right-from-bracket"></i>
-            <p>Sair</p>
           </button>
         </li>
       </S.NavList>

@@ -5,11 +5,13 @@ import { Provider } from 'react-redux'
 import { store } from './store'
 import App from './App.tsx'
 import GlobalStyle from './style/index.ts'
+import NavigationListener from './components/navListen/index.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <Router>
+        <NavigationListener />
         <GlobalStyle />
         <App />
       </Router>
