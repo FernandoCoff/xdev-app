@@ -9,6 +9,8 @@ import { Feed } from './components/feed'
 import { Profile } from './components/profile'
 import { useAppDispatch, useAppSelector } from './hooks'
 import { fetchMyProfile } from './store/reducers/authSlice'
+import { PostDetail } from './components/postDetail'
+import { SearchProfile } from './components/searchProfile'
 
 function App() {
   const dispatch = useAppDispatch()
@@ -30,6 +32,8 @@ function App() {
           <Route path="/" element={<Home />}>
             <Route path="feed" element={<Feed />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="profiles" element={<SearchProfile />} />
+            <Route path="post/:id" element={<PostDetail />} />
             <Route index element={<Feed />} />
           </Route>
         </Route>

@@ -1,3 +1,9 @@
+import {
+  PiArrowSquareInBold,
+  PiUserBold,
+  PiHouseSimpleBold,
+  PiMagnifyingGlassBold,
+} from 'react-icons/pi'
 import * as S from './style'
 import { useAppDispatch } from '../../hooks'
 import { logout } from '../../store/reducers/authSlice'
@@ -8,25 +14,32 @@ export const NavBar = () => {
 
   return (
     <S.Navbar>
-      <h2>Xdev</h2>
+      <h2>XD</h2>
       <S.NavList>
         <li>
           <Link to="/feed">
             <button>
-              <i className="fa-solid fa-house"></i>
+              <PiHouseSimpleBold />
             </button>
           </Link>
         </li>
         <li>
           <Link to="/profile">
             <button>
-              <i className="fa-regular fa-user"></i>
+              <PiUserBold />
+            </button>
+          </Link>
+        </li>
+        <li>
+          <Link to="/profiles">
+            <button>
+              <PiMagnifyingGlassBold />
             </button>
           </Link>
         </li>
         <li>
           <button onClick={() => dispath(logout())}>
-            <i className="fa-solid fa-arrow-right-from-bracket"></i>
+            <PiArrowSquareInBold />
           </button>
         </li>
       </S.NavList>
