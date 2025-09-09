@@ -17,6 +17,15 @@ export const FollowItem = styled.li`
   align-items: center;
   flex-direction: column;
 
+  a {
+    text-decoration: none;
+    color: black;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+
   span {
     font-weight: bold;
     font-size: 16px;
@@ -86,12 +95,14 @@ export const ProfileImage = styled.div`
   div {
     position: relative;
     max-width: 400px;
-    max-height: 400px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    height: auto;
 
     &:hover {
       button {

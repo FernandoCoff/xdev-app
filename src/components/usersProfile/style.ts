@@ -10,12 +10,12 @@ export const Container = styled.div`
   justify-content: space-between;
   background-color: ${color.gray};
 
-  div{
+  div {
     display: flex;
     gap: 16px;
     align-items: center;
 
-    h4{
+    h4 {
       font-weight: 500;
       font-size: 16px;
     }

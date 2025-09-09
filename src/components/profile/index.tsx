@@ -8,6 +8,7 @@ import {
   updateUserProfile,
   updateUserPicture,
 } from '../../store/reducers/authSlice'
+import { Link } from 'react-router-dom'
 
 type StatusType = 'success' | 'error' | 'empty'
 
@@ -180,16 +181,20 @@ export const Profile = () => {
         </div>
         <S.FollowContainer>
           <S.FollowItem>
-            <span>0</span>
+            <span>{user?.post_count || 0}</span>
             <p>Publicações</p>
           </S.FollowItem>
           <S.FollowItem>
-            <span>0</span>
-            <p>Seguindo</p>
+            <Link to="/following">
+              <span>{user?.follows_count || 0}</span>
+              <p>Seguindo</p>
+            </Link>
           </S.FollowItem>
           <S.FollowItem>
-            <span>0</span>
-            <p>Seguidores</p>
+            <Link to="/followes">
+              <span>{user?.followed_by_count || 0}</span>
+              <p>Seguidores</p>
+            </Link>
           </S.FollowItem>
         </S.FollowContainer>
       </S.ProfileImage>

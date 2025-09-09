@@ -111,6 +111,7 @@ export const Coment = styled.div`
   justify-content: space-between;
   gap: 16px;
   border: 1px solid ${color.border};
+  border-top: none;
   @media (max-width: 800px) {
     margin-bottom: 80px;
   }

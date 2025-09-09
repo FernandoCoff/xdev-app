@@ -24,16 +24,16 @@ export const NavBar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/profile">
+          <Link to="/profiles">
             <button>
-              <PiUserBold />
+              <PiMagnifyingGlassBold />
             </button>
           </Link>
         </li>
         <li>
-          <Link to="/profiles">
+          <Link to="/profile">
             <button>
-              <PiMagnifyingGlassBold />
+              <PiUserBold />
             </button>
           </Link>
         </li>

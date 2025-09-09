@@ -1,11 +1,9 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  type PayloadAction,
-} from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { AxiosError } from 'axios'
 import axios from 'axios'
 import type { RootState } from '../index'
+
+import { toggleFollow } from './profileSlice'
 
 interface BasicUser {
   id: number
@@ -13,20 +11,27 @@ interface BasicUser {
   email: string
 }
 
-interface UserProfile {
+export interface FollowerInfo {
   user: BasicUser
-  profile_picture: string
-  follows: BasicUser[]
-  followed_by: BasicUser[]
+  profile_picture: string | null
+}
+
+export interface UserProfile {
+  user: BasicUser
+  profile_picture: string | null
+  follows: FollowerInfo[]
+  followed_by: FollowerInfo[]
   follows_count: number
   followed_by_count: number
+  is_following: boolean
+  post_count: number
 }
 
 interface AuthState {
   user: UserProfile | null
   token: string | null
   isAuthenticated: boolean
-  following: UserProfile[] | null // Adicionado para a lista de "seguindo"
+  following: UserProfile[] | null
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error?: undefined | null | object
 }
@@ -34,19 +39,8 @@ interface AuthState {
 interface UpdateProfilePayload {
   username?: string
   email?: string
-}
-
-interface UpdateProfilePayload {
-  username?: string
-  email?: string
   password?: string
   password2?: string
-}
-
-interface UserProfile {
-  username: string
-  email: string
-  avatarUrl: string
 }
 
 interface RegisterCredentials {
@@ -99,9 +93,7 @@ export const loginUser = createAsyncThunk<
     return response.data
   } catch (err: unknown) {
     const error = err as AxiosError<ApiError>
-    if (!error.response) {
-      throw err
-    }
+    if (!error.response) throw err
     return rejectWithValue(error.response.data)
   }
 })
@@ -116,9 +108,7 @@ export const registerUser = createAsyncThunk<
     return response.data
   } catch (err: unknown) {
     const error = err as AxiosError<ApiError>
-    if (!error.response) {
-      throw err
-    }
+    if (!error.response) throw err
     return rejectWithValue(error.response.data)
   }
 })
@@ -139,9 +129,7 @@ export const fetchUserProfile = createAsyncThunk<
     return response.data
   } catch (err: unknown) {
     const error = err as AxiosError<ApiError>
-    if (!error.response) {
-      throw err
-    }
+    if (!error.response) throw err
     return rejectWithValue(error.response.data)
   }
 })
@@ -158,7 +146,6 @@ export const updateUserProfile = createAsyncThunk<
       if (!token) {
         return rejectWithValue({ detail: 'Nenhum token encontrado.' })
       }
-
       const response = await axios.patch(
         `${API_URL}/auth/profile/me/update/`,
         profileData,
@@ -169,9 +156,7 @@ export const updateUserProfile = createAsyncThunk<
       return response.data
     } catch (err: unknown) {
       const error = err as AxiosError<ApiError>
-      if (!error.response) {
-        throw err
-      }
+      if (!error.response) throw err
       return rejectWithValue(error.response.data)
     }
   },
@@ -189,10 +174,8 @@ export const updateUserPicture = createAsyncThunk<
       if (!token) {
         return rejectWithValue({ detail: 'Nenhum token encontrado.' })
       }
-
       const formData = new FormData()
       formData.append('profile_picture', pictureFile)
-
       const response = await axios.patch(
         `${API_URL}/auth/profile/me/update-picture/`,
         formData,
@@ -206,9 +189,7 @@ export const updateUserPicture = createAsyncThunk<
       return response.data
     } catch (err: unknown) {
       const error = err as AxiosError<ApiError>
-      if (!error.response) {
-        throw err
-      }
+      if (!error.response) throw err
       return rejectWithValue(error.response.data)
     }
   },
@@ -226,20 +207,16 @@ export const fetchFollowingList = createAsyncThunk<
       if (!token) {
         return rejectWithValue({ detail: 'Nenhum token encontrado.' })
       }
-
       const response = await axios.get(
         `${API_URL}/auth/profile/${username}/follow/`,
         {
           headers: { Authorization: `Token ${token}` },
         },
       )
-
       return response.data
     } catch (err: unknown) {
       const error = err as AxiosError<ApiError>
-      if (!error.response) {
-        throw err
-      }
+      if (!error.response) throw err
       return rejectWithValue(error.response.data)
     }
   },
@@ -261,9 +238,7 @@ export const fetchMyProfile = createAsyncThunk<
     return response.data
   } catch (err: unknown) {
     const error = err as AxiosError<ApiError>
-    if (!error.response) {
-      throw err
-    }
+    if (!error.response) throw err
     return rejectWithValue(error.response.data)
   }
 })
@@ -287,125 +262,39 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {
-        state.status = 'loading'
-        state.error = null
-      })
-      .addCase(
-        loginUser.fulfilled,
-        (state, action: PayloadAction<AuthResponse>) => {
-          state.status = 'succeeded'
-          state.token = action.payload.token
-          state.isAuthenticated = true
-        },
-      )
-      .addCase(loginUser.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.payload
-        state.isAuthenticated = false
-        state.token = null
-      })
-      .addCase(registerUser.pending, (state) => {
-        state.status = 'loading'
-        state.error = null
-      })
-      .addCase(registerUser.fulfilled, (state) => {
+
+      .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded'
+        state.token = action.payload.token
+        state.isAuthenticated = true
       })
-      .addCase(registerUser.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.payload
+      .addCase(fetchMyProfile.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        state.user = action.payload
+        state.isAuthenticated = true
       })
-      .addCase(fetchUserProfile.pending, (state) => {
-        state.status = 'loading'
-        state.error = null
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        if (state.user) {
+          state.user = { ...state.user, ...action.payload }
+        }
       })
-      .addCase(
-        fetchUserProfile.fulfilled,
-        (state, action: PayloadAction<UserProfile>) => {
-          state.status = 'succeeded'
-          state.user = action.payload
-          state.isAuthenticated = true
-        },
-      )
-      .addCase(fetchUserProfile.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.payload
-        state.user = null
+      .addCase(updateUserPicture.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        if (state.user) {
+          state.user.profile_picture = action.payload.profile_picture
+        }
       })
 
-      .addCase(updateUserProfile.pending, (state) => {
-        state.status = 'loading'
-        state.error = null
-      })
-      .addCase(updateUserPicture.pending, (state) => {
-        state.status = 'loading'
-        state.error = null
-      })
-      .addCase(updateUserProfile.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.payload
-      })
-      .addCase(updateUserPicture.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.payload
-      })
-      .addCase(
-        updateUserPicture.fulfilled,
-        (state, action: PayloadAction<UserProfile>) => {
-          state.status = 'succeeded'
-          if (state.user) {
-            state.user = { ...state.user, ...action.payload }
-          } else {
-            state.user = action.payload
+      .addCase(toggleFollow.fulfilled, (state, action) => {
+        if (state.user) {
+          const status = action.payload.status
+          if (status === 'followed') {
+            state.user.follows_count += 1
+          } else if (status === 'unfollowed') {
+            state.user.follows_count -= 1
           }
-        },
-      )
-      .addCase(
-        updateUserProfile.fulfilled,
-        (state, action: PayloadAction<UserProfile>) => {
-          state.status = 'succeeded'
-          if (state.user) {
-            state.user = { ...state.user, ...action.payload }
-          } else {
-            state.user = action.payload
-          }
-        },
-      )
-
-      .addCase(fetchFollowingList.pending, (state) => {
-        state.status = 'loading'
-        state.error = null
-      })
-      .addCase(
-        fetchFollowingList.fulfilled,
-        (state, action: PayloadAction<UserProfile[]>) => {
-          state.status = 'succeeded'
-          state.following = action.payload
-        },
-      )
-      .addCase(fetchFollowingList.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.payload
-        state.following = null
-      })
-
-      .addCase(fetchMyProfile.pending, (state) => {
-        state.status = 'loading'
-      })
-      .addCase(
-        fetchMyProfile.fulfilled,
-        (state, action: PayloadAction<UserProfile>) => {
-          state.status = 'succeeded'
-          state.user = action.payload
-          state.isAuthenticated = true
-        },
-      )
-      .addCase(fetchMyProfile.rejected, (state) => {
-        state.status = 'failed'
-        state.isAuthenticated = false
-        state.token = null
-        localStorage.removeItem('token')
+        }
       })
   },
 })

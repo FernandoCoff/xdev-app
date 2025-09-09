@@ -38,6 +38,14 @@ export const CreatePost = styled.div`
     border-radius: 0px;
   }
 
+  form {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   textarea {
     flex: 1;
     width: 100%;
@@ -91,7 +99,7 @@ export const Control = styled.div`
     font-weight: 600;
   }
 
-  button{
+  button {
     display: flex;
     align-items: center;
     justify-content: center;

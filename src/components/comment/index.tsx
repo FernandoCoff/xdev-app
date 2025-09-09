@@ -1,22 +1,32 @@
 import * as S from './style'
 
-export const Comment = () => {
+type CommentType = {
+  avatar: string
+  createdAt: string
+  username: string
+  content: string
+}
+
+export const Comment = ({
+  avatar,
+  createdAt,
+  username,
+  content,
+}: CommentType) => {
   return (
     <S.Post>
       <S.Profile>
         <img
-          src="https://placehold.co/400x400/4747fc/white?text=x"
+          src={avatar || 'https://placehold.co/400x400/4747fc/white?text=x'}
           alt="Imagem do usuário"
         />
       </S.Profile>
       <S.Content>
         <S.Header>
-          <h4>Filister</h4>
-          <small> 21 H</small>
+          <h4>{username}</h4>
+          <small>{createdAt}</small>
         </S.Header>
-        <S.Text>
-          meu hobby? falar com pessoas aleatórias aqui no Xdev rsrs 🤭
-        </S.Text>
+        <S.Text>{content}</S.Text>
       </S.Content>
     </S.Post>
   )

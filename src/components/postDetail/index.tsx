@@ -1,11 +1,41 @@
+import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { useAppSelector, useAppDispatch } from '../../hooks'
+import { fetchPostById, createComment } from '../../store/reducers/postSlice'
 import { PiArrowCircleLeftFill } from 'react-icons/pi'
-import { Comment } from '../comment'
-import { useAppSelector } from '../../hooks'
-import { Link } from 'react-router-dom'
+import { Comment as CommentComponent } from '../comment'
 import * as S from './style'
 
 export const PostDetail = () => {
+  const dispatch = useAppDispatch()
+  const { id } = useParams<{ id: string }>()
+  const postId = Number(id)
+
   const { user } = useAppSelector((state) => state.auth)
+  const { selectedPost, status } = useAppSelector((state) => state.post)
+  const [commentContent, setCommentContent] = useState('')
+
+  useEffect(() => {
+    if (postId) {
+      dispatch(fetchPostById(postId))
+    }
+  }, [postId, dispatch])
+
+  const handleCommentSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (commentContent.trim() && postId) {
+      dispatch(createComment({ postId, content: commentContent.trim() }))
+      setCommentContent('')
+    }
+  }
+
+  if (status === 'loading' && !selectedPost) {
+    return <S.Container>Carregando...</S.Container>
+  }
+
+  if (status === 'failed' || !selectedPost) {
+    return <S.Container>Post não encontrado ou erro ao carregar.</S.Container>
+  }
 
   return (
     <S.Container>
@@ -19,32 +49,43 @@ export const PostDetail = () => {
         <S.Post>
           <S.Picture>
             <img
-              src="https://placehold.co/400x400/4747fc/white?text=x"
+              src={
+                selectedPost.author.avatar ||
+                'https://placehold.co/100x100/4747fc/white?text=x'
+              }
               alt="Imagem do usuário"
             />
           </S.Picture>
           <S.Content>
             <S.Header>
-              <h4>Filister</h4>
-              <small> 21 H</small>
+              <h4>{selectedPost.author.username}</h4>
+              <small>{selectedPost.created_since}</small>
             </S.Header>
-            <S.Text>
-              meu hobby? falar com pessoas aleatórias aqui no Xdev rsrs 🤭
-            </S.Text>
+            <S.Text>{selectedPost.content}</S.Text>
           </S.Content>
         </S.Post>
         <S.ListComment>
-          <li>
-            <Comment />
-          </li>
+          {selectedPost.comments?.map((comment) => (
+            <li key={comment.id}>
+              <CommentComponent
+                avatar={
+                  comment.author.avatar ||
+                  'https://placehold.co/100x100/4747fc/white?text=x'
+                }
+                username={comment.author.username}
+                createdAt={comment.created_since}
+                content={comment.content}
+              />
+            </li>
+          ))}
         </S.ListComment>
-        <S.Coment>
+        <S.Coment as="form" onSubmit={handleCommentSubmit}>
           <S.Picture>
-            <Link to="/profile">
+            <Link to={`/profile`}>
               <img
                 src={
                   user?.profile_picture ||
-                  'https://placehold.co/400x400/4747fc/white?text=x'
+                  'https://placehold.co/100x100/4747fc/white?text=x'
                 }
                 alt="Imagem do usuário"
               />
@@ -54,8 +95,12 @@ export const PostDetail = () => {
             name="comment"
             id="comment"
             placeholder="Escrever novo comentário"
+            value={commentContent}
+            onChange={(e) => setCommentContent(e.target.value)}
           ></textarea>
-          <button>Comentar</button>
+          <button type="submit" disabled={!commentContent.trim()}>
+            Comentar
+          </button>
         </S.Coment>
       </S.PostContainer>
     </S.Container>

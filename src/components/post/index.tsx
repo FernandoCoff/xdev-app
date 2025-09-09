@@ -1,37 +1,73 @@
-import { PiHeartBold, PiChatTeardropTextBold } from 'react-icons/pi'
+import {
+  PiHeartBold,
+  PiChatTeardropTextBold,
+  PiHeartFill,
+} from 'react-icons/pi'
 import { Link } from 'react-router-dom'
 import * as S from './style'
+import { useAppDispatch, useAppSelector } from '../../hooks'
+import { toggleLike } from '../../store/reducers/postSlice'
 
-export const Post = () => {
+type PostType = {
+  username: string
+  createdAt: string
+  content: string
+  avatar: string
+  likesNumber: number
+  commentsNumber: number
+  id: number
+  like?: boolean
+}
+
+export const Post = ({
+  username,
+  createdAt,
+  avatar,
+  likesNumber,
+  commentsNumber,
+  like,
+  content,
+  id,
+}: PostType) => {
+  const dispatch = useAppDispatch()
+  const { user: currentUser } = useAppSelector((state) => state.auth)
+
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (currentUser) {
+      dispatch(toggleLike({ postId: id, currentUserId: currentUser.user.id }))
+    } else {
+      console.error('Usuário precisa estar logado para curtir.')
+    }
+  }
+
   return (
     <S.Post>
-      <Link to="/post/:id">
+      <Link to={`/post/${id}`}>
         <S.Profile>
           <img
-            src="https://placehold.co/400x400/4747fc/white?text=x"
+            src={avatar || 'https://placehold.co/100x100/4747fc/white?text=x'}
             alt="Imagem do usuário"
           />
         </S.Profile>
         <S.Content>
           <S.Header>
-            <h4>Filister</h4>
-            <small> 21 H</small>
+            <h4>{username}</h4>
+            <small>{createdAt}</small>
           </S.Header>
-          <S.Text>
-            meu hobby? falar com pessoas aleatórias aqui no Xdev rsrs 🤭
-          </S.Text>
+          <S.Text>{content}</S.Text>
           <S.Footer>
-            <div>
-              <button>
-                <PiHeartBold />
-              </button>
-              <span>0</span>
+            <div onClick={handleLikeClick}>
+              <button>{like ? <PiHeartFill /> : <PiHeartBold />}</button>
+              <span>{likesNumber}</span>
             </div>
             <div>
               <button>
                 <PiChatTeardropTextBold />
               </button>
-              <span>0</span>
+              <span>{commentsNumber}</span>
             </div>
           </S.Footer>
         </S.Content>

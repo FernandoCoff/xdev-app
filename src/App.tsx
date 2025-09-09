@@ -11,6 +11,8 @@ import { useAppDispatch, useAppSelector } from './hooks'
 import { fetchMyProfile } from './store/reducers/authSlice'
 import { PostDetail } from './components/postDetail'
 import { SearchProfile } from './components/searchProfile'
+import { Followes } from './components/followes'
+import { Following } from './components/following'
 
 function App() {
   const dispatch = useAppDispatch()
@@ -34,6 +36,8 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="profiles" element={<SearchProfile />} />
             <Route path="post/:id" element={<PostDetail />} />
+            <Route path="followes" element={<Followes />} />
+            <Route path="following" element={<Following />} />
             <Route index element={<Feed />} />
           </Route>
         </Route>
