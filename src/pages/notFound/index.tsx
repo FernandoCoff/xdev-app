@@ -1,5 +1,7 @@
+import { Navigate } from 'react-router'
+
 function NotFound() {
-  return <h1>Página indisponível</h1>
+  return <Navigate to="/" replace />
 }
 
 export default NotFound

@@ -10,6 +10,39 @@ import * as S from './style'
 
 type StatusType = 'success' | 'error' | 'empty'
 
+const validatePassword = (
+  password: string,
+  username: string,
+  email: string,
+) => {
+  const errors = []
+
+  if (password.length < 8) {
+    errors.push('A senha deve ter no mínimo 8 caracteres.')
+  }
+
+  if (/^\d+$/.test(password)) {
+    errors.push('A senha não pode ser totalmente numérica.')
+  }
+
+  const commonPasswords = ['123456', 'password', '12345678', 'qwerty']
+  if (commonPasswords.includes(password.toLowerCase())) {
+    errors.push('Esta senha é muito comum.')
+  }
+
+  const attributes = [username, email]
+  for (const attribute of attributes) {
+    if (attribute && password.toLowerCase().includes(attribute.toLowerCase())) {
+      errors.push(
+        `A senha não pode ser parecida com o seu nome de usuário ou email.`,
+      )
+      break
+    }
+  }
+
+  return errors
+}
+
 function Register() {
   const {
     status: authStatus,
@@ -79,16 +112,30 @@ function Register() {
     if (password.length === 0) {
       setStatuses((prev) => ({ ...prev, password: 'empty' }))
       setErrors((prev) => ({ ...prev, password: '' }))
-    } else if (password.length < 8) {
+      return
+    }
+
+    const validationErrors = validatePassword(password, username, email)
+
+    if (validationErrors.length > 0) {
       setStatuses((prev) => ({ ...prev, password: 'error' }))
-      setErrors((prev) => ({ ...prev, password: 'Caracteres insuficientes!' }))
+      setErrors((prev) => ({ ...prev, password: validationErrors[0] }))
     } else {
       setStatuses((prev) => ({ ...prev, password: 'success' }))
       setErrors((prev) => ({ ...prev, password: '' }))
     }
-  }, [password])
+  }, [password, username, email])
 
   useEffect(() => {
+    if (statuses.password !== 'success') {
+      if (password2.length > 0) {
+        setStatuses((prev) => ({ ...prev, password2: 'error' }))
+      } else {
+        setStatuses((prev) => ({ ...prev, password2: 'empty' }))
+      }
+      return
+    }
+
     if (password2.length === 0) {
       setStatuses((prev) => ({ ...prev, password2: 'empty' }))
       setErrors((prev) => ({ ...prev, password2: '' }))
@@ -102,12 +149,10 @@ function Register() {
         password2: 'As senhas não são idênticas!',
       }))
     } else {
-      if (password.length >= 8) {
-        setStatuses((prev) => ({ ...prev, password2: 'success' }))
-        setErrors((prev) => ({ ...prev, password2: '' }))
-      }
+      setStatuses((prev) => ({ ...prev, password2: 'success' }))
+      setErrors((prev) => ({ ...prev, password2: '' }))
     }
-  }, [password, password2])
+  }, [password, password2, statuses.password])
 
   const validateForm = () => {
     const newErrors = { username: '', email: '', password: '', password2: '' }
@@ -122,7 +167,7 @@ function Register() {
       isValid = false
     }
     if (statuses.password !== 'success') {
-      newErrors.password = 'Mínimo 8 caracteres!'
+      newErrors.password = errors.password || 'Senha inválida!'
       isValid = false
     }
     if (statuses.password2 !== 'success') {
@@ -189,15 +234,15 @@ function Register() {
           />
           <FormButton status={authStatus} text="Cadastrar" />
         </form>
-        {authStatus === 'failed' && authError && (
-            typeof authError === 'object' && authError !== null ? (
-              Object.values(authError).map((msg, index) => (
-                <S.error key={index}>{msg as string}</S.error>
-              ))
-            ) : (
-              <S.error>{authError as string}</S.error>
-            )
-        )}
+        {authStatus === 'failed' &&
+          authError &&
+          (typeof authError === 'object' && authError !== null ? (
+            Object.values(authError).map((msg, index) => (
+              <S.error key={index}>{msg as string}</S.error>
+            ))
+          ) : (
+            <S.error>{authError as string}</S.error>
+          ))}
       </CardForm>
     </AuthContainer>
   )

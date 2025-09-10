@@ -2,13 +2,13 @@ import styled from 'styled-components'
 import { color } from '../../style'
 
 export const Navbar = styled.nav`
-  max-width: 250px;
+  max-width: 80px;
+  width: 100%;
   height: 100dvh;
   background-color: ${color.bgPrimary};
-  box-shadow: 5px 5px 10px rgba(0,0,0,.1);
+  z-index: 100;
 
-
-  h2{
+  h2 {
     padding-top: 24px;
     text-align: center;
     font-weight: 600;
@@ -18,76 +18,79 @@ export const Navbar = styled.nav`
     &::after {
       content: '';
       height: 3px;
-      width: 20%;
+      width: 40%;
       background: ${color.gradient};
       position: absolute;
       bottom: 0;
-      left: 35%;
+      left: 20%;
       border-radius: 3px;
     }
   }
-  @media(max-width: 1024px){
-    max-width: 100px;
 
-    h2{
-      &::after{
-        left: 10%;
-        width: 50%;
-      }
-    }
+  @media (max-width: 1300px) {
+    box-shadow: none;
   }
-  @media(max-width: 767px){
+
+  @media (max-width: 800px) {
     max-width: 100%;
     height: 80px;
-    position: sticky;
-    left: 0;
-    top: 100%;
+    border: none;
 
-    h2{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+
+    h2 {
       display: none;
     }
   }
-  `
+`
 export const NavList = styled.ul`
   width: 100%;
+  margin-top: -60.8px;
   display: flex;
   align-items: center;
   flex-direction: column;
-  justify-content: flex-start;
-  padding: 32px;
+  justify-content: center;
+  height: 100%;
+  padding: 0px;
   list-style: none;
-  gap: 24px;
+  gap: 40px;
 
-  li{
+  li {
     width: 100%;
 
-    button{
+    a {
+      text-decoration: none;
+    }
+
+    button {
       width: 100%;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      gap: 16px;
+      justify-content: center;
       background-color: transparent;
       border: none;
-      font-size: 18px;
-      transition: .4s;
+      font-size: 20px;
+      transition: 0.4s;
+      flex-wrap: nowrap;
 
-      @media(max-width: 1024px){
-        justify-content: center;
-        p{
-          display: none;
-        }
+      svg {
+        width: 25px;
+        height: 25px;
       }
 
-      &:hover{
+      &:hover {
         color: ${color.primary};
       }
-
     }
   }
 
-  @media(max-width: 767px){
+  @media (max-width: 800px) {
+    margin-top: 0;
     flex-direction: row;
+    justify-content: space-evenly;
+    padding: 0;
+    height: 100%;
   }
-
 `

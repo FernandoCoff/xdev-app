@@ -7,6 +7,9 @@ export const color = {
   border: '#ccc',
   red: '#f14646ff',
   green: '#4cd33aff',
+  gray: '#fafafa',
+  gray2: '#ecececff',
+  gray3: '#9b9b9bff',
 }
 
 const GlobalStyle = createGlobalStyle`
@@ -15,6 +18,12 @@ const GlobalStyle = createGlobalStyle`
   margin: 0;
   box-sizing: border-box;
   font-family: 'poppins', sans-serif;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar{
+    display: none;
+  }
 }
 
 button{
@@ -29,5 +38,4 @@ export const AuthContainer = styled.div`
   align-items: center;
   justify-content: center;
 `
-
 export default GlobalStyle
