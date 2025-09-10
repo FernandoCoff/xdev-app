@@ -109,3 +109,11 @@ export const Control = styled.div`
     color: ${color.primary};
   }
 `
+export const Info = styled.li`
+  width: 100%;
+  text-align: center;
+  padding: 16px;
+  background-color: ${color.gray};
+  border: 1px solid ${color.border};
+  border-top: none;
+`

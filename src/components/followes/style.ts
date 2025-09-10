@@ -89,3 +89,12 @@ export const UserList = styled.ul`
   height: 100%;
   overflow: scroll;
 `
+export const Info = styled.li`
+  width: 100%;
+  text-align: center;
+  padding: 16px;
+  background-color: ${color.gray};
+  border: 1px solid ${color.border};
+  border-top: none;
+`
+

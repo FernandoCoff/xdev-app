@@ -44,7 +44,7 @@ export const Following = () => {
           <PiMagnifyingGlassBold />
           <input
             type="text"
-            placeholder="Buscar quem você segue..."
+            placeholder="Buscar quem você segue"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -58,14 +58,13 @@ export const Following = () => {
                   'https://placehold.co/100x100/4747fc/white?text=x'
                 }
                 username={person.user.username}
-                // Como esta é a lista de quem seguimos, este valor é sempre 'true'
                 follow={true}
                 onFollowToggle={() => handleFollowToggle(person.user.username)}
               />
             </li>
           ))}
           {(!user || user.follows.length === 0) && (
-            <li>Você ainda não segue ninguém.</li>
+            <S.Info>Você ainda não segue ninguém.</S.Info>
           )}
         </S.UserList>
       </S.Search>

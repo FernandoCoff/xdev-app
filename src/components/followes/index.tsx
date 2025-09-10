@@ -45,7 +45,7 @@ export const Followes = () => {
           <PiMagnifyingGlassBold />
           <input
             type="text"
-            placeholder="Buscar seguidores..."
+            placeholder="Buscar seguidores"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -67,7 +67,7 @@ export const Followes = () => {
             </li>
           ))}
           {(!user || user.followed_by.length === 0) && (
-            <li>Você ainda não tem seguidores.</li>
+            <S.Info>Você ainda não tem seguidores</S.Info>
           )}
         </S.UserList>
       </S.Search>

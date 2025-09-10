@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from '../../hooks'
-import { fetchPosts, createPost } from '../../store/reducers/postSlice'
+import {
+  fetchPosts,
+  createPost,
+  fetchFeedPosts,
+} from '../../store/reducers/postSlice'
 import { PiArrowCircleDownFill } from 'react-icons/pi'
 import { Post } from '../post'
 import * as S from './style'
@@ -12,9 +16,16 @@ export const Feed = () => {
   const { posts, status } = useAppSelector((state) => state.post)
   const [postContent, setPostContent] = useState('')
 
+
+  const [feedType, setFeedType] = useState<'foryou' | 'following'>('foryou')
+
   useEffect(() => {
-    dispatch(fetchPosts())
-  }, [dispatch])
+    if (feedType === 'foryou') {
+      dispatch(fetchPosts())
+    } else {
+      dispatch(fetchFeedPosts())
+    }
+  }, [feedType, dispatch])
 
   const handlePostSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -24,14 +35,18 @@ export const Feed = () => {
     }
   }
 
+  const handleToggleFeed = () => {
+    setFeedType((current) => (current === 'foryou' ? 'following' : 'foryou'))
+  }
+
   return (
     <S.Feed>
       <S.FeedContainer>
         <S.Control>
-          <button>
+          <button onClick={handleToggleFeed} title="Alternar feed">
             <PiArrowCircleDownFill />
           </button>
-          <h2>Para você</h2>
+          <h2>{feedType === 'foryou' ? 'Para você' : 'Seguindo'}</h2>
         </S.Control>
         <S.CreatePost>
           <S.Picture>
@@ -77,7 +92,14 @@ export const Feed = () => {
                 />
               </li>
             ))}
-          {status === 'failed' && <li>Ocorreu um erro ao buscar os posts.</li>}
+          {status === 'failed' && <S.Info>Ocorreu um erro ao buscar os posts</S.Info>}
+          {status === 'succeeded' && posts.length === 0 && (
+            <S.Info>
+              {feedType === 'following'
+                ? 'Nenhum post das pessoas que você segue. Que tal seguir alguém?'
+                : 'Ainda não há posts por aqui. Seja o primeiro!'}
+            </S.Info>
+          )}
         </S.PostList>
       </S.FeedContainer>
     </S.Feed>

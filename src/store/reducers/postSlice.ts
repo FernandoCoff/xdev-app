@@ -38,6 +38,22 @@ export const fetchPosts = createAsyncThunk<
   }
 })
 
+export const fetchFeedPosts = createAsyncThunk<
+  Post[],
+  void,
+  { rejectValue: ApiError }
+>('posts/fetchFeedPosts', async (_, { rejectWithValue }) => {
+  try {
+    // A única diferença é a URL, que agora aponta para o endpoint do feed
+    const response = await api.get('/post/posts/feed/')
+    return response.data
+  } catch (err: unknown) {
+    const error = err as AxiosError<ApiError>
+    if (!error.response) throw err
+    return rejectWithValue(error.response.data)
+  }
+})
+
 // Thunk para buscar um post específico pelo ID
 export const fetchPostById = createAsyncThunk<
   Post,
@@ -127,7 +143,17 @@ const postsSlice = createSlice({
         state.status = 'failed'
         state.error = action.payload
       })
-
+      .addCase(fetchFeedPosts.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(fetchFeedPosts.fulfilled, (state, action: PayloadAction<Post[]>) => {
+        state.status = 'succeeded'
+        state.posts = action.payload
+      })
+      .addCase(fetchFeedPosts.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.payload
+      })
       // Reducers para createPost
       .addCase(createPost.fulfilled, (state, action: PayloadAction<Post>) => {
         state.posts.unshift(action.payload) // Adiciona o novo post no início da lista
