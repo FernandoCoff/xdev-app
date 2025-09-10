@@ -7,10 +7,9 @@ import type { AxiosError } from 'axios'
 import api from '../../services/api'
 import type { Post, ApiError, LikeToggleResponse, Comment } from '../types'
 
-// Define o formato do estado para este slice
 interface PostsState {
   posts: Post[]
-  selectedPost: Post | null // Para armazenar o post atualmente visualizado
+  selectedPost: Post | null
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error: ApiError | null | undefined
 }
@@ -22,7 +21,6 @@ const initialState: PostsState = {
   error: null,
 }
 
-// Thunk para buscar todos os posts (Feed)
 export const fetchPosts = createAsyncThunk<
   Post[],
   void,
@@ -44,7 +42,6 @@ export const fetchFeedPosts = createAsyncThunk<
   { rejectValue: ApiError }
 >('posts/fetchFeedPosts', async (_, { rejectWithValue }) => {
   try {
-    // A única diferença é a URL, que agora aponta para o endpoint do feed
     const response = await api.get('/post/posts/feed/')
     return response.data
   } catch (err: unknown) {
@@ -54,7 +51,6 @@ export const fetchFeedPosts = createAsyncThunk<
   }
 })
 
-// Thunk para buscar um post específico pelo ID
 export const fetchPostById = createAsyncThunk<
   Post,
   number,
@@ -70,7 +66,6 @@ export const fetchPostById = createAsyncThunk<
   }
 })
 
-// Thunk para criar um novo post
 export const createPost = createAsyncThunk<
   Post,
   { content: string },
@@ -86,7 +81,6 @@ export const createPost = createAsyncThunk<
   }
 })
 
-// Thunk para criar um novo comentário
 export const createComment = createAsyncThunk<
   Comment,
   { postId: number; content: string },
@@ -104,7 +98,6 @@ export const createComment = createAsyncThunk<
   }
 })
 
-// Thunk para curtir/descurtir um post
 export const toggleLike = createAsyncThunk<
   LikeToggleResponse,
   { postId: number; currentUserId: number },
@@ -131,7 +124,6 @@ const postsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Reducers para fetchPosts
       .addCase(fetchPosts.pending, (state) => {
         state.status = 'loading'
       })
@@ -146,20 +138,20 @@ const postsSlice = createSlice({
       .addCase(fetchFeedPosts.pending, (state) => {
         state.status = 'loading'
       })
-      .addCase(fetchFeedPosts.fulfilled, (state, action: PayloadAction<Post[]>) => {
-        state.status = 'succeeded'
-        state.posts = action.payload
-      })
+      .addCase(
+        fetchFeedPosts.fulfilled,
+        (state, action: PayloadAction<Post[]>) => {
+          state.status = 'succeeded'
+          state.posts = action.payload
+        },
+      )
       .addCase(fetchFeedPosts.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.payload
       })
-      // Reducers para createPost
       .addCase(createPost.fulfilled, (state, action: PayloadAction<Post>) => {
-        state.posts.unshift(action.payload) // Adiciona o novo post no início da lista
+        state.posts.unshift(action.payload)
       })
-
-      // Reducers para fetchPostById
       .addCase(fetchPostById.pending, (state) => {
         state.status = 'loading'
       })
@@ -175,8 +167,6 @@ const postsSlice = createSlice({
         state.selectedPost = null
         state.error = action.payload
       })
-
-      // Reducer para createComment
       .addCase(
         createComment.fulfilled,
         (state, action: PayloadAction<Comment>) => {
@@ -185,8 +175,6 @@ const postsSlice = createSlice({
           }
         },
       )
-
-      // Reducers para toggleLike
       .addCase(toggleLike.fulfilled, (state, action) => {
         const { postId, currentUserId } = action.meta.arg
         const post = state.posts.find((p) => p.id === postId)

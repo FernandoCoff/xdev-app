@@ -97,4 +97,3 @@ export const Info = styled.li`
   border: 1px solid ${color.border};
   border-top: none;
 `
-

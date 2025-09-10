@@ -16,7 +16,6 @@ export const Feed = () => {
   const { posts, status } = useAppSelector((state) => state.post)
   const [postContent, setPostContent] = useState('')
 
-
   const [feedType, setFeedType] = useState<'foryou' | 'following'>('foryou')
 
   useEffect(() => {
@@ -92,7 +91,9 @@ export const Feed = () => {
                 />
               </li>
             ))}
-          {status === 'failed' && <S.Info>Ocorreu um erro ao buscar os posts</S.Info>}
+          {status === 'failed' && (
+            <S.Info>Ocorreu um erro ao buscar os posts</S.Info>
+          )}
           {status === 'succeeded' && posts.length === 0 && (
             <S.Info>
               {feedType === 'following'

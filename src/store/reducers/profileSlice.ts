@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { AxiosError } from 'axios'
 import api from '../../services/api'
-import type { UserProfile, ApiError } from '../types' // Importe os tipos
+import type { UserProfile, ApiError } from '../types'
 
-// Define a estrutura do estado deste slice
 interface ProfileState {
   profiles: UserProfile[]
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -16,10 +15,9 @@ const initialState: ProfileState = {
   error: null,
 }
 
-// Thunk para pesquisar/listar utilizadores
 export const searchProfiles = createAsyncThunk<
   UserProfile[],
-  string, // A query de pesquisa
+  string,
   { rejectValue: ApiError }
 >('profiles/search', async (query, { rejectWithValue }) => {
   try {
