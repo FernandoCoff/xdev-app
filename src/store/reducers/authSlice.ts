@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import type { AxiosError } from 'axios'
 import axios from 'axios'
+import type { PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../index'
-
 import { toggleFollow } from './profileSlice'
 
 interface BasicUser {
@@ -104,15 +104,17 @@ export const registerUser = createAsyncThunk<
   { rejectValue: ApiError }
 >('auth/register', async (userData, { rejectWithValue }) => {
   try {
-    const response = await axios.post(API_URL + '/auth/register/', userData)
-    return response.data
+    const response = await axios.post(API_URL + '/auth/register/', userData);
+    return response.data;
   } catch (err: unknown) {
-    const error = err as AxiosError<ApiError>
-    if (!error.response) throw err
-    return rejectWithValue(error.response.data)
-  }
-})
+    const error = err as AxiosError<ApiError>;
 
+    if (!error.response) {
+      return rejectWithValue({ detail: 'Erro de conexão. Verifique sua internet ou tente novamente mais tarde.' } as ApiError);
+    }
+    return rejectWithValue(error.response.data);
+  }
+});
 export const fetchUserProfile = createAsyncThunk<
   UserProfile,
   string,
@@ -262,40 +264,62 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-
+      .addCase(registerUser.fulfilled, (state) => {
+          state.status = 'succeeded';
+        })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.status = 'succeeded'
-        state.token = action.payload.token
-        state.isAuthenticated = true
+        state.status = 'succeeded';
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
       })
       .addCase(fetchMyProfile.fulfilled, (state, action) => {
-        state.status = 'succeeded'
-        state.user = action.payload
-        state.isAuthenticated = true
+        state.status = 'succeeded';
+        state.user = action.payload;
+        state.isAuthenticated = true;
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
-        state.status = 'succeeded'
+        state.status = 'succeeded';
         if (state.user) {
-          state.user = { ...state.user, ...action.payload }
+          state.user = { ...state.user, ...action.payload };
         }
       })
       .addCase(updateUserPicture.fulfilled, (state, action) => {
-        state.status = 'succeeded'
+        state.status = 'succeeded';
         if (state.user) {
-          state.user.profile_picture = action.payload.profile_picture
+          state.user.profile_picture = action.payload.profile_picture;
         }
       })
-
       .addCase(toggleFollow.fulfilled, (state, action) => {
         if (state.user) {
-          const status = action.payload.status
+          const status = action.payload.status;
           if (status === 'followed') {
-            state.user.follows_count += 1
+            state.user.follows_count += 1;
           } else if (status === 'unfollowed') {
-            state.user.follows_count -= 1
+            state.user.follows_count -= 1;
           }
         }
       })
+      .addMatcher(
+        (action) => action.type.endsWith('/pending'),
+        (state) => {
+          state.status = 'loading';
+          state.error = null;
+        }
+      )
+    .addMatcher(
+        (action) => action.type.endsWith('/rejected'),
+        (state, action: PayloadAction<ApiError>) => {
+          state.status = 'failed';
+          state.error = action.payload;
+          state.isAuthenticated = false;
+          state.user = null;
+
+          if (action.type.includes('fetchMyProfile')) {
+              state.token = null;
+              localStorage.removeItem('token');
+          }
+        }
+      );
   },
 })
 

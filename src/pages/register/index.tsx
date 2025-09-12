@@ -73,13 +73,13 @@ function Register() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    if (authStatus === 'succeeded') {
+      navigate('/login');
+    }
     if (isAuthenticated) {
       navigate('/')
     }
-    if (authStatus === 'succeeded') {
-      navigate('/login')
-    }
-  }, [authStatus, navigate, isAuthenticated])
+  }, [authStatus, isAuthenticated, navigate, dispatch]);
 
   useEffect(() => {
     if (username.length === 0) {
